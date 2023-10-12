@@ -7,16 +7,28 @@ const App = () => {
   ]) 
   const [newName, setNewName] = useState('');
   const [showAll, setShowAll] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const addPerson = (event) => {
     event.preventDefault();
-    const personObject = {
-      name: newName,
-      id: persons.length + 1,
-    };
-  
-    setPersons(persons.concat(personObject));
-    setNewName(''); // Réinitialisation du champ newName
+
+    // Vérifie si le nom est déjà présent dans la liste
+    const nameExists = persons.some(person => person.name === newName);
+
+    if (nameExists) {
+      setErrorMessage('Ce nom est déjà dans la liste.');
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000); // Efface le message après 5 secondes
+    } else {
+      const personObject = {
+        name: newName,
+        id: persons.length + 1,
+      };
+
+      setPersons(persons.concat(personObject));
+      setNewName('');
+    }
   };
 
   const handlePersonChange = (event) => {
@@ -28,6 +40,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      {errorMessage && <div className="error">{errorMessage}</div>}
       <form onSubmit={addPerson}>
         <div>
           name: <input value={newName} onChange={handlePersonChange} />
